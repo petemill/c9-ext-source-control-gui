@@ -120,7 +120,7 @@ module.exports = ext.register("extension_template", {
         var data = {
             command: "git",
             argv: ["hg", "status"],
-            extra: {type: "gitblame", path:".", original_line: ""},
+            extra: {type: "gitblame",scccmd: 'hgstatus', path:".", original_line: ""},
             requireshandling: !commands.commands.git,
             cwd: dirName // needed for nested repositories
         };
@@ -150,14 +150,14 @@ module.exports = ext.register("extension_template", {
     },
     onMessage: function(e) {
         var message = e.message;
-        console.log('message');
-        console.log('myext ' + message.type + ' ' + message.subtype);
-        console.log(message.extra + message.extra.type);
+        //console.log('onMessage');
+        //console.log('type and subtype:' + message.type + ' ' + message.subtype);
+        //console.log('extra and extra type:' + message.extra + message.extra.type);
         if (!message.extra || message.extra.type != "gitblame")
             return false;
         // if (!this.blamejs[message.extra.path])
         //     return;
-        console.log(message.data);
+        
         var type = message.type.substr(-5);
         if (type == "-exit") {
             // message.code && util.alert(
@@ -170,6 +170,17 @@ module.exports = ext.register("extension_template", {
         // Is the body coming in piecemeal? Process after this message
         if (type != "-data" || !message.data) {
             return;
+        }
+        
+        var commandType = message.extra.scccmd;
+        
+        //real stuff here, parse output
+        console.log(commandType + " message received back from server:");
+        console.log(message.data);
+        
+        switch(commandType) {
+            case "hgstatus":
+                this.onHgStatus(message.data);
         }
 //         var path = message.extra.path;
 //         var blamejs = this.blamejs[path];
@@ -185,44 +196,13 @@ module.exports = ext.register("extension_template", {
 //         // Now formulate the output
 //         this.formulateOutput(blamejs, path);
     },
-    on2Message: function(e) {
-        var message = e.message;
-        console.log('message');
-        console.log('myext ' + message.type + ' ' + message.subtype);
 
-        if (message.type != "result" && message.subtype != "hg")
-            return;
-
-        if (message.body.err) {
-            util.alert(
-                "Error",
-                "There was an error returned from the server:",
-                message.body.err
-            );
-
-            return;
-        }
-        console.log(message.body);
-        switch(message.body.hgcommand) {
-            case "blame":
-                this.onGitBlameMessage(message);
-                break;
-            case "log":
-                this.onGitLogMessage(message);
-                break;
-            case "show":
-                this.onGitShowMessage(message);
-                break;
-            default:
-                return;
-        }
-    },
-
-    onGitShowMessage : function(message) {
-        this.gitLogs[message.body.file].revisions[message.body.hash] =
-            message.body.out;
-        editors.currentEditor.amlEditor.getSession().setValue(message.body.out);
-        editors.currentEditor.amlEditor.$editor.setReadOnly(true);
+    onHgStatus : function(message) {
+        console.log('on hg status');
+        // this.gitLogs[message.body.file].revisions[message.body.hash] =
+        //     message.body.out;
+        // editors.currentEditor.amlEditor.getSession().setValue(message.body.out);
+        // editors.currentEditor.amlEditor.$editor.setReadOnly(true);
     },
 
     onGitBlameMessage: function(message) {

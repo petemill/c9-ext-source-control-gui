@@ -119,7 +119,7 @@ module.exports = ext.register("extension_template", {
 
         var data = {
             command: "git",
-            argv: ["git", "status"],
+            argv: ["hg", "status"],
             extra: {type: "gitblame", path:".", original_line: ""},
             requireshandling: !commands.commands.git,
             cwd: dirName // needed for nested repositories

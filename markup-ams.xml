@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window
-        id = "scratchpadWindow"
-        title = "Scratchpad"
+        id = "commitWindow"
+        title = "Mercurial Commit"
         center = "true"
         modal = "false"
         buttons = "close"
@@ -14,8 +14,7 @@
         </a:vbox>
         <a:divider />
         <a:hbox pack="start" padding="5" edge="10 10 5 10">
-            <a:button id="scratchpadAdd">Add New Pad</a:button>
-            <a:button id="scratchpadClose">Close</a:button>
+            <a:button id="windowClose">Close</a:button>
         </a:hbox>
     </a:window>
 </a:application>

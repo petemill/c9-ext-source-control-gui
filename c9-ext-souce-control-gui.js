@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     markup = require('./markup-ams.xml.js');
     menus = require("ext/menus/menus");
     
-    return module.exports = ext.register('ext/scratchpad/scratchpad', {
+    return module.exports = ext.register('ext/sourcecontrolgui/sourcecontrolgui', {
         name     : "Source Control GUI",
         dev      : "Wishfulcode",
         type: ext.GENERAL,
@@ -23,8 +23,8 @@ define(function(require, exports, module) {
         nodes: [],
 
         hook: function() {
-            var mnuView = menus.addItemByPath("View");
-            this.nodes.push(mnuView.appendChild(new apf.item({
+            var mnuTools = menus.addItemByPath("Tools");
+            this.nodes.push(mnuTools.appendChild(new apf.item({
               caption: 'Mercurial Commit',
               onclick: __bind(function() {
                 this.beginMercurialCommit();
@@ -35,7 +35,7 @@ define(function(require, exports, module) {
         beginMercurialCommit: function() {
             ext.initExtension(this);
             //show the window
-            this.scratchpadWindow.show();
+            this.commitWindow.show();
             //begin the process by checking which files have been modified
             this.runCommand('hgstatus',["hg", "status"], '.');
             //display waiting status
@@ -50,12 +50,11 @@ define(function(require, exports, module) {
             
             //define UI item references
             this.uiStatusLines = statusLines;
-            this.scratchpadAdd = scratchpadAdd;
-            this.scratchpadClose = scratchpadClose;
-            this.scratchpadWindow = scratchpadWindow;
+            this.uiWindowClose = windowClose;
+            this.commitWindow = commitWindow;
             
-            this.scratchpadClose.addEventListener('click', __bind(function() {
-              return this.scratchpadWindow.close();
+            this.uiWindowClose.addEventListener('click', __bind(function() {
+              return this.commitWindow.close();
             }, this));
             
             
@@ -83,7 +82,7 @@ define(function(require, exports, module) {
             this.scratchpadTabs.destroy(true, true);
             this.scratchpadAdd.destroy(true, true);
             this.scratchpadClose.destroy(true, true);
-            this.scratchpadWindow.destroy(true, true);
+            this.commitWindow.destroy(true, true);
         },
         
         onHgStatus : function(message) {
